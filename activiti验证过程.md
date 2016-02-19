@@ -157,16 +157,43 @@ public class ReceiveTaskTest extends TestCase {
 }
 ```
 
+
+- **参考连接**
+[Activiti进阶（九）——接收任务（ReceiveTask）][java_receive_task_url]
+
 ## 业务规则任务  
 
 - **描述**  
 
-英文描述
-中文描述
+英文描述  
+
+A Business Rule task is used to synchronously execute one or more rules. Activiti uses Drools Expert, the Drools rule engine to execute business rules. Currently, the .drl files containing the business rules have to be deployed together with the process definition that defines a business rule task to execute those rules. This means that all .drl files that are used in a process have to be packaged in the process BAR file like for example the task forms. For more information about creating business rules for Drools Expert please refer to the Drools documentation at JBoss Drools
+
+If you want to plug in your implementation of the rule task, e.g. because you want to use Drools differently or you want to use a completely different rule engine, then you can use the class or expression attribute on the BusinessRuleTask and it will behave exactly like a ServiceTask
+
+
+中文描述  
+
+业务规则任务用来同步执行一个或多个规则。activiti使用drools规则引擎执行业务规则。 目前，包含业务规则的.drl文件必须和流程定义一起发布，流程定义里包含了执行这些规则的业务规则任务。 意味着流程使用的所有.drl文件都必须打包在流程BAR文件里，比如任务表单。 更多使用Drools Expert创建业务规则的信息，请参考JBoss Drools的文档。
+如果想要使用你自己实现的规则任务，比如，因为你想用不同方式使用drools，或你想使用完全不同的规则引擎， 你可以使用BusinessRuleTask上的class或表达式属性，它用起来就和 ServiceTask一样。
+
 
 - **图形标记**  
 
+英文描述
+
+A Business Rule task is visualized the with a table icon.
+
+
+中文描述
+
+业务规则任务用表格图标标识
+
+![业务规则任务](http://7xphqb.com1.z0.glb.clouddn.com/cb15feb46a2019c03c572a0b53c66ef2.png)
+
 - **实例**  
+
+
 
 - **XML代码**
 
@@ -322,7 +349,7 @@ public class ReceiveTaskTest extends TestCase {
 
 
 # 参考链接  
-[Activiti进阶（九）——接收任务（ReceiveTask）][java_receive_task_url]
+
 
 
 
