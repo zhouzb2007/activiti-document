@@ -77,6 +77,8 @@ A Receive Task is visualized as a task (rounded rectangle) with a message icon i
 </definitions>
 ```
 
+>要在接收任务等待的流程实例继续执行， 可以调用runtimeService.signal(executionId)，传递接收任务上流程的id。 下面的代码演示了实际是如何工作的：
+
 - **代码**
 
 ```java
@@ -151,7 +153,6 @@ public class ReceiveTaskTest extends TestCase {
 		if (nowPi == null) {
 			System.out.println("流程结束");
 		}
-
 	}
 }
 ```
