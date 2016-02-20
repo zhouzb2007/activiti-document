@@ -158,7 +158,8 @@ public class ReceiveTaskTest extends TestCase {
 ```
 
 
-- **参考连接**
+- **参考连接**  
+
 [Activiti进阶（九）——接收任务（ReceiveTask）][java_receive_task_url]
 
 ## 业务规则任务  
@@ -195,9 +196,16 @@ A Business Rule task is visualized the with a table icon.
 
 
 
-- **XML代码**
+
+- **XML代码**  
+
+
 
 - **Java 代码**  
+
+
+- **参考链接**  
+
 
 
 ## 事物子流程  
