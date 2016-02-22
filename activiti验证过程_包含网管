@@ -25,8 +25,153 @@ The functionality of the inclusive gateway is based on the incoming and outgoing
 
 
 - **实例**  
-
+![包含网管流程图](http://7xphqb.com1.z0.glb.clouddn.com/63cd8a040f3c545af8d7b14193d814fa.png)
 
 - **XML代码**
+xml核心代码
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="myIncluesiveGatewayProcess" name="排他网管测试流程" isExecutable="true">
+    <startEvent id="startevent1" name="Start"></startEvent>
+    <userTask id="usertask1" name="天庭选拔大赛"></userTask>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="usertask1"></sequenceFlow>
+    <inclusiveGateway id="inclusivegateway1" name="Inclusive Gateway"></inclusiveGateway>
+    <sequenceFlow id="flow2" sourceRef="usertask1" targetRef="inclusivegateway1"></sequenceFlow>
+    <userTask id="usertask2" name="上天当神仙"></userTask>
+    <sequenceFlow id="flow3" name="生肖属性为猴" sourceRef="inclusivegateway1" targetRef="usertask2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${property == "monkey"}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="usertask3" name="并行任务-妖怪吃的唐僧肉"></userTask>
+    <sequenceFlow id="flow4" name="生肖属性不为猴" sourceRef="inclusivegateway1" targetRef="usertask3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${property != "monkey"}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="usertask4" name="并行任务-人要经历81难"></userTask>
+    <sequenceFlow id="flow5" name="生肖属性不为猴" sourceRef="inclusivegateway1" targetRef="usertask4">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${property != "monkey"}]]></conditionExpression>
+    </sequenceFlow>
+    <inclusiveGateway id="inclusivegateway2" name="Inclusive Gateway"></inclusiveGateway>
+    <sequenceFlow id="flow6" sourceRef="usertask3" targetRef="inclusivegateway2"></sequenceFlow>
+    <sequenceFlow id="flow7" sourceRef="usertask4" targetRef="inclusivegateway2"></sequenceFlow>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <sequenceFlow id="flow8" sourceRef="usertask2" targetRef="endevent1"></sequenceFlow>
+    <sequenceFlow id="flow9" sourceRef="inclusivegateway2" targetRef="usertask5"></sequenceFlow>
+    <userTask id="usertask5" name="封神"></userTask>
+    <sequenceFlow id="flow10" sourceRef="usertask5" targetRef="endevent1"></sequenceFlow>
+  </process>
+```
+
 
 - **Java 代码**
+
+Java 核心代码
+
+```java
+ProcessEngineConfiguration processEngineConfiguration = ProcessEngineConfiguration
+			.createProcessEngineConfigurationFromResource("activiti.cfg.xml",
+					"processEngineConfiguration");
+	// 流程引擎对象
+	ProcessEngine processEngine = ProcessEngines
+			.getProcessEngine(processEngineConfiguration.getProcessEngineName());
+
+	private void executeProcess(String keyStr){
+		RuntimeService runtimeService = processEngine.getRuntimeService();
+
+		ProcessInstance pi = runtimeService
+				.startProcessInstanceByKey("myIncluesiveGatewayProcess");
+
+		Map<String, Object> vars = new HashMap<String, Object>();
+		vars.put("property", keyStr);
+		TaskService taskService = processEngine.getTaskService();
+		/**
+		 * 当前任务
+		 */
+		List<Task> tasks = taskService.createTaskQuery()
+				.processInstanceId(pi.getId()).list();
+		System.out.println("如果是property是monkey则有一个任务，否则同时又两个任务: "+tasks.size());
+
+		for (Task task : tasks) {
+			System.out.println(task.getId() + " , " + task.getName());
+			taskService.complete(task.getId(),vars);
+		}
+
+		/**
+		 * 下一步任务
+		 */
+		tasks = taskService.createTaskQuery().processInstanceId(pi.getId())
+				.list();
+		System.out.println("如果是property是monkey则有一个任务，否则同时又两个任务: "+tasks.size());
+		for (Task task : tasks) {
+			System.out.println(task.getId() + " , " + task.getName());
+			taskService.complete(task.getId());
+		}
+
+
+		if (keyStr != "monkey"){
+			tasks = taskService.createTaskQuery()
+					.processInstanceId(pi.getId()).list();
+			System.out.println("如果是property是monkey则有一个任务，否则同时又两个任务: "+tasks.size());
+
+			for (Task task : tasks) {
+				System.out.println(task.getId() + " , " + task.getName());
+				taskService.complete(task.getId());
+			}
+		}
+
+		ProcessInstance nowPi = processEngine.getRuntimeService()
+				.createProcessInstanceQuery()
+				.processInstanceId(pi.getId()).singleResult();
+		if (nowPi == null) {
+			System.out.println("流程结束");
+		}
+	}
+
+	public void testIncluesiveGateway(){
+
+		try{
+			InputStream bpmnInputStream = this.getClass().getClassLoader()
+					.getResourceAsStream("IncluesiveGatewayProcess.bpmn");
+
+			Deployment deployment = processEngine
+					.getRepositoryService()
+					.createDeployment()
+					.addInputStream("IncluesiveGatewayProcess.bpmn", bpmnInputStream)
+					.deploy();
+			System.out.println("部署ID:" + deployment.getId());
+
+			System.out.println("节点有一个任务");
+			executeProcess("monkey");
+			System.out.println("节点有两个任务");
+			executeProcess("person");
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+```  
+
+验证输出结果  
+```shell
+部署ID:170001
+节点有一个任务
+如果是property是monkey则有一个任务，否则同时又两个任务: 1
+170008 , 天庭选拔大赛
+如果是property是monkey则有一个任务，否则同时又两个任务: 1
+170012 , 上天当神仙
+流程结束
+节点有两个任务
+如果是property是monkey则有一个任务，否则同时又两个任务: 1
+170017 , 天庭选拔大赛
+如果是property是monkey则有一个任务，否则同时又两个任务: 2
+170023 , 并行任务-妖怪吃的唐僧肉
+170025 , 并行任务-人要经历81难
+如果是property是monkey则有一个任务，否则同时又两个任务: 1
+170029 , 封神
+流程结束
+
+```
+
+- **参考链接**  
+http://www.activiti.org/userguide/index.html#bpmnInclusiveGateway
+http://www.mossle.com/docs/activiti/index.html#bpmnInclusiveGateway
+http://www.tuicool.com/articles/ZZzaum
