@@ -192,6 +192,19 @@ A Business Rule task is visualized the with a table icon.
 
 ![业务规则任务](http://7xphqb.com1.z0.glb.clouddn.com/cb15feb46a2019c03c572a0b53c66ef2.png)
 
+
+- **参数说明**
+
+|属性名称|属性说明|示例
+| :- | :- | :- |
+|`activiti:rules` |在规则文件.drl中定义的规则名称，多个规则使用逗号分隔。要执行规则文件中的全部规则，该属性设置为空即可 | `<businessRuleTask id="businessruletask1" activiti:rules="rule1,rule2" />` |
+|`activiti:ruleVariableslnput` | 业务规则执行需要的数据源，使用${ fooVar｝方式定义，多个规则用逗号分隔 | `<businessRuleTask id="businessruletask I" activiti:ruleVariableslnput` |
+|`activiti :execlude` |用来设置是否排除某些规则( ru l e ），如果值为false ，不排除按照activiti:rules 规则执行；如果设置为true ， 则忽略activiti : rules 指定的规则。如果设置为fa l se 的同时activiti:rules值为空．则不执行任何规则 | `<businessRuleTask id="businessruletask I" activiti:rules="rule2" activiti: execlude ="true" />`|
+|`activiti: res ultVariableName` | 规则执行结果变量，变量的值为rule Variableslnput 定义的变量集合（ArrayList）| `<businessRuleTask id=”businessruletask I" activiti:rules=”rule2”activiti: execlude =”true" /> 此例中忽略规则rule2 ，仅执行规则ruleI`|
+
+
+
+
 - **实例**  
 
 
@@ -362,4 +375,7 @@ A Business Rule task is visualized the with a table icon.
 
 
 
-[java_receive_task_url]:http://blog.csdn.net/zjx86320/article/details/50385444
+[java_receive_task_url]:http://blog.csdn.net/zjx86320/article/details/50385444  
+[activiti_5.16_manual]:http://www.mossle.com/docs/activiti/index.html  
+[activiti_user_manual]:http://www.activiti.org/userguide/index.html
+[jboos_drools_link]:http://www.drools.org/
